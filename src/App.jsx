@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import keyboardImage from './assets/indicaciones_teclado.svg';
 
 // ══════════════════════════════════════════════════════════
 //  CONSTANTS
@@ -409,7 +410,7 @@ function Confetti() {
 // ══════════════════════════════════════════════════════════
 //  QUESTION CARD — glass dark style
 // ══════════════════════════════════════════════════════════
-function QuestionCard({team,color,score,question,onAnswer,disabled,lives,streak,answer,setAnswer,attempt}) {
+function QuestionCard({name,color,score,question,onAnswer,disabled,lives,streak,answer,setAnswer,attempt}) {
   const [shake,setShake]=useState(false);
   const [flash,setFlash]=useState(null);
 
@@ -442,7 +443,7 @@ function QuestionCard({team,color,score,question,onAnswer,disabled,lives,streak,
       {powered&&<div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,transparent,#FFD93D,transparent)",animation:"shimmer 1.4s infinite"}}/>}
       <style>{`@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}`}</style>
 
-      <div style={{textAlign:"center",fontFamily:"'Fredoka One',cursive",color:powered?"#FFD93D":cm.accent,fontSize:16,marginBottom:3}}>{team}</div>
+      <div style={{textAlign:"center",fontFamily:"'Fredoka One',cursive",color:powered?"#FFD93D":cm.accent,fontSize:16,marginBottom:3}}>{name}</div>
       <div style={{textAlign:"center",fontSize:16,marginBottom:4,letterSpacing:3}}>
         {"❤️".repeat(lives)}{"🖤".repeat(MAX_LIVES-lives)}
       </div>
@@ -509,6 +510,7 @@ export default function App() {
   const [lastEvent,setLE]    = useState(null);
   const [busy,setBusy]       = useState({team1:false,team2:false});
   const [answers, setAnswers] = useState({ team1: "", team2: "" });
+  const [teamNames, setTeamNames] = useState({ team1: "Equipo 1", team2: "Equipo 2" });
   const tickRef              = useRef(0);
 
   const pickOp=()=>selectedOps[Math.floor(Math.random()*selectedOps.length)];
@@ -616,7 +618,33 @@ export default function App() {
         <div style={{fontSize:62,marginBottom:6,filter:"drop-shadow(0 0 20px #FFD93D88)"}}>🧮</div>
         <div style={{background:"linear-gradient(135deg,#FF922B,#FFD93D)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",fontSize:"clamp(30px,7vw,54px)",fontWeight:700,lineHeight:1.1,marginBottom:2}}>Aprendemos</div>
         <div style={{background:"linear-gradient(135deg,#6BCB77,#4D96FF)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",fontSize:"clamp(30px,7vw,54px)",fontWeight:700,marginBottom:14}}>Jugando 🎉</div>
-        <div style={{color:"rgba(255,255,255,0.6)",fontSize:14,marginBottom:28}}>¡Jalar la Cuerda Matemática para 2 equipos!</div>
+        <div style={{color:"rgba(255,255,255,0.6)",fontSize:14,marginBottom:14}}>¡Jalar la Cuerda Matemática para 2 equipos!</div>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginBottom: '20px', width: '100%', maxWidth: 420, padding: '0 10px' }}>
+          <input
+            type="text"
+            value={teamNames.team1}
+            onChange={(e) => setTeamNames(tn => ({ ...tn, team1: e.target.value.slice(0, 12) }))}
+            placeholder="Equipo 1"
+            style={{
+              flex: 1, padding: '10px', borderRadius: '12px',
+              border: '1px solid rgba(255, 146, 43, 0.5)', background: 'rgba(0, 0, 0, 0.3)',
+              color: '#FF922B', textAlign: 'center', fontFamily: "'Fredoka One', cursive",
+              fontSize: '15px', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.3)'
+            }}
+          />
+          <input
+            type="text"
+            value={teamNames.team2}
+            onChange={(e) => setTeamNames(tn => ({ ...tn, team2: e.target.value.slice(0, 12) }))}
+            placeholder="Equipo 2"
+            style={{
+              flex: 1, padding: '10px', borderRadius: '12px',
+              border: '1px solid rgba(77, 150, 255, 0.5)', background: 'rgba(0, 0, 0, 0.3)',
+              color: '#4D96FF', textAlign: 'center', fontFamily: "'Fredoka One', cursive",
+              fontSize: '15px', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.3)'
+            }}
+          />
+        </div>
         <div style={{background:"rgba(255,255,255,0.06)",backdropFilter:"blur(16px)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:20,padding:"18px 20px",marginBottom:20}}>
           <div style={{color:"#FFD93D",fontWeight:700,fontSize:15,marginBottom:12}}>⚙️ Operaciones:</div>
           <div style={{display:"flex",gap:8,flexWrap:"wrap",justifyContent:"center"}}>
@@ -634,6 +662,7 @@ export default function App() {
             📌 {MAX_ATTEMPTS} intentos · {MAX_LIVES} vidas · Racha ×{POWER_STREAK} = ⚡ Power Up
           </div>
         </div>
+        <img src={keyboardImage} alt="Indicaciones del teclado" style={{ width: '100%', maxWidth: '500px', borderRadius: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', marginBottom: 20 }} />
         <button onClick={startGame} style={{background:"linear-gradient(135deg,#FF6B6B,#FF922B)",color:"#fff",border:"none",borderRadius:20,padding:"16px 52px",fontSize:22,fontFamily:"'Fredoka One',cursive",cursor:"pointer",boxShadow:"0 8px 28px rgba(255,107,107,0.5)"}}>🎮 ¡JUGAR!</button>
       </div>
     </div>
@@ -641,7 +670,7 @@ export default function App() {
 
   // ── RESULT ──
   if(screen==="result"){
-    const winner=score.team1>score.team2?"Equipo 1 🔴":score.team2>score.team1?"Equipo 2 🔵":null;
+    const winner=score.team1>score.team2?`${teamNames.team1} 🔴`:score.team2>score.team1?`${teamNames.team2} 🔵`:null;
     const msgs=winner?WIN_MSG(winner):DRAW_MSG;
     return (
       <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Fredoka One',cursive",position:"relative",background:"linear-gradient(135deg,#0f0a2a,#1e1060,#0f0a2a)",overflow:"hidden"}}>
@@ -653,7 +682,7 @@ export default function App() {
             <div key={i} style={{color:i===0?"#FFD93D":"#fff",fontSize:i===0?28:i===1?20:16,fontWeight:700,marginBottom:10,textShadow:i===0?"0 0 20px #FFD93D88":"none"}}>{m}</div>
           ))}
           <div style={{display:"flex",gap:16,justifyContent:"center",margin:"20px 0",flexWrap:"wrap"}}>
-            {[{label:"Equipo 1 🔴",s:score.team1,c:"#FF922B"},{label:"Equipo 2 🔵",s:score.team2,c:"#4D96FF"}].map(t=>(
+            {[{label:`${teamNames.team1} 🔴`,s:score.team1,c:"#FF922B"},{label:`${teamNames.team2} 🔵`,s:score.team2,c:"#4D96FF"}].map(t=>(
               <div key={t.label} style={{background:`${t.c}18`,border:`2px solid ${t.c}55`,borderRadius:16,padding:"14px 24px",color:"#fff",minWidth:130,backdropFilter:"blur(10px)"}}>
                 <div style={{fontSize:13,color:t.c}}>{t.label}</div>
                 <div style={{fontSize:44,fontWeight:700}}>{t.s}</div>
@@ -701,7 +730,7 @@ export default function App() {
         </div>
         <div className="game-row" style={{display:"flex",gap:12,alignItems:"flex-start",justifyContent:"center"}}>
           {questions.team1&&(
-            <QuestionCard team="🔴 Equipo 1" color="orange" score={score.team1} question={questions.team1}
+            <QuestionCard name={`🔴 ${teamNames.team1}`} color="orange" score={score.team1} question={questions.team1}
               lives={lives.team1} streak={streaks.team1} onAnswer={c=>handleAnswer("team1",c)} disabled={busy.team1||t1done}
               answer={answers.team1}
               setAnswer={(val) => setAnswers(a => ({ ...a, team1: val }))}
@@ -715,7 +744,7 @@ export default function App() {
             <div style={{color:"rgba(255,255,255,0.3)",fontSize:11,textAlign:"center"}}>EDUTEC -UNIFSLB- CICLO VI</div>
           </div>
           {questions.team2&&(
-            <QuestionCard team="🔵 Equipo 2" color="blue" score={score.team2} question={questions.team2}
+            <QuestionCard name={`🔵 ${teamNames.team2}`} color="blue" score={score.team2} question={questions.team2}
               lives={lives.team2} streak={streaks.team2} onAnswer={c=>handleAnswer("team2",c)} disabled={busy.team2||t2done}
               answer={answers.team2}
               setAnswer={(val) => setAnswers(a => ({ ...a, team2: val }))}
